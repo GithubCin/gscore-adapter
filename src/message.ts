@@ -93,12 +93,10 @@ export const parseMessage = (message: Message, messageId: string) => {
     if (message.type === 'image') return segment.image(message.data.replace('base64://', 'data:image/png;base64,'));
     if (message.type === 'at') return segment.at(message.data);
     if (message.type === 'reply') return h('quote', { id: messageId }, segment.text(message.data));
-    if (message.type === 'file') {
-        const b = Buffer.from(message.data.split('|')[1], 'base64');
-        writeFileSync('test.json', b);
-        console.log(h.file(b, 'application/json'));
-        return h.file(b, 'application/json');
-    }
+    // if (message.type === 'file') {
+    //     const b = Buffer.from(message.data.split('|')[1], 'base64');
+    //     return h.file(b, 'application/json');
+    // }
 
     if (message.type === 'node') {
         const result = h('figure');

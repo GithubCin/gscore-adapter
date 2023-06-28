@@ -35,5 +35,5 @@ export function apply(ctx: Context, config: Config) {
         // const c = await session.getChannel(session.channelId);
         // session.elements.forEach((i) => console.log(i));
     });
-    console.log(ctx.events);
+    // console.log(ctx.events);
 }

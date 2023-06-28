@@ -31,7 +31,7 @@ export class GsCoreClient {
         this.ws.on('message', (data) => {
             logger.info(`收到core服务器消息: ${data}`);
             const message = JSON.parse(data.toString());
-            console.log(message);
+            // console.log(message);
             if (message.target_id == null) {
                 message.content.forEach((element) => {
                     logger.info(element.data);
