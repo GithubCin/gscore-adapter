@@ -4,6 +4,14 @@
   "version": "1.0.0",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
+  "contributors": [
+    "CHAOSHIWUYI <reyonce@live.cn>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GithubCin/gscore-adpater.git"
+  },
+  "homepage": "https://github.com/GithubCin/gscore-adpater",
   "files": [
     "lib",
     "dist"
@@ -13,8 +21,18 @@
   "keywords": [
     "chatbot",
     "koishi",
-    "plugin"
+    "plugin",
+    "genshin",
+    "yuanshen",
+    "原神",
+    "gsuid",
+    "gscore"
   ],
+  "koishi": {
+    "description": {
+      "zh": "早柚核心适配器 详情见 https://docs.gsuid.gbots.work/#/"
+    }
+  },
   "peerDependencies": {
     "koishi": "^4.11.5"
   },
