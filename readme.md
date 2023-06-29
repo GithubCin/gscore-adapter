@@ -4,5 +4,4 @@
 
 早柚核心适配器 详情见 https://docs.gsuid.gbots.work/#/
 
-暂不支持：
-导出和导入抽卡记录命令
+导出和导入抽卡记录命令仅支持 onebot-adapter 下使用

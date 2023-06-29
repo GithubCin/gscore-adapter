@@ -1,6 +1,10 @@
 import { Context, Schema, Logger } from 'koishi';
-import { GsCoreClient } from './client';
+import { GsuidCoreClient } from './client';
 import { genToCoreMessage } from './message';
+import {} from '@koishijs/plugin-adapter-onebot';
+import { rmSync } from 'fs';
+import { randomUUID } from 'crypto';
+import { isEqual } from 'lodash-es';
 
 export const name = 'gscore-adapter';
 
@@ -20,9 +24,75 @@ export const Config: Schema<Config> = Schema.object({
 });
 
 export function apply(ctx: Context, config: Config) {
-    const client = new GsCoreClient();
+    const client = new GsuidCoreClient();
+    //处理接收的文件
+
+    ctx.component('custom-file', (attrs, children, session) => {
+        if (session.platform !== 'onebot') {
+            return '该平台适配器不支持导出文件类型消息';
+        }
+        const onebot = session.onebot;
+        if (session.subtype === 'private') {
+            const id = session.channelId;
+            const reg = /private:(\d+)/;
+            const userId = reg.test(id) ? reg.exec(id)[1] : null;
+            if (userId)
+                onebot.uploadPrivateFile(userId, attrs.location, attrs.name).finally(() => rmSync(attrs.location));
+            // onebot.uploadPrivateFile()
+        } else {
+            onebot.uploadGroupFile(session.channelId, attrs.location, attrs.name).finally(() => rmSync(attrs.location));
+        }
+        // console.log(attrs);
+        return `已发送文件 ${attrs.name}`;
+    });
     ctx.on('ready', () => {
         client.createWs(ctx, config);
+        ctx.bots.forEach((bot) => {
+            if (bot.platform === 'onebot') {
+                const logMap = new Map();
+                bot?.socket?.on('message', (data) => {
+                    let parsed;
+                    try {
+                        parsed = JSON.parse(data.toString());
+                    } catch (error) {
+                        return logger.warn('cannot parse message', data);
+                    }
+                    console.log(parsed);
+                    if (parsed.post_type === 'notice' && parsed.notice_type.includes('file') && parsed.file != null) {
+                        const tmp = logMap.get(parsed.time);
+                        if (isEqual(tmp, parsed)) return;
+                        logMap.set(parsed.time, parsed);
+                        if (parsed.file.name.includes('.json')) {
+                            ctx.http
+                                .file(parsed.file.url)
+                                .then((res) => {
+                                    const b = Buffer.from(res.data);
+                                    const content = `${parsed.file.name}|${b.toString('base64')}`;
+                                    const message: ReturnType<typeof genToCoreMessage> = {
+                                        bot_id: 'onebot',
+                                        bot_self_id: String(parsed.self_id),
+                                        msg_id: randomUUID(),
+                                        user_type: 'direct',
+                                        group_id: null,
+                                        user_id: String(parsed.user_id),
+                                        user_pm: 6,
+                                        content: [
+                                            {
+                                                type: 'file',
+                                                data: content,
+                                            },
+                                        ],
+                                    };
+                                    client.ws.send(Buffer.from(JSON.stringify(message)));
+                                })
+                                .catch((e) => {
+                                    logger.error(e);
+                                });
+                        }
+                    }
+                });
+            }
+        });
     });
     // write your plugin here
     ctx.on('message', (session) => {
@@ -30,10 +100,4 @@ export function apply(ctx: Context, config: Config) {
         // console.log(genToCoreMessage(session, config));
         client.ws.send(Buffer.from(JSON.stringify(genToCoreMessage(session, config))));
     });
-    ctx.on('guild-file-added', async (session) => {
-        // console.log(session);
-        // const c = await session.getChannel(session.channelId);
-        // session.elements.forEach((i) => console.log(i));
-    });
-    // console.log(ctx.events);
 }

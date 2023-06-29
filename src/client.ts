@@ -1,14 +1,9 @@
-import { Context, Dict, h, Logger, Quester, Session } from 'koishi';
-import { logger, Config } from './index';
+import type { Context } from 'koishi';
+import { logger, type Config } from './index';
 import WebSocket from 'ws';
 import { parseCoreMessage } from './message';
 
-export class GsCoreClient {
-    // constructor(config: Config) {
-    //     if (this.ws == null) {
-    //         this.createWs(config);
-    //     }
-    // }
+export class GsuidCoreClient {
     reconnectInterval = 5000;
 
     ws!: WebSocket;
@@ -29,12 +24,10 @@ export class GsCoreClient {
             }, this.reconnectInterval);
         });
         this.ws.on('message', (data) => {
-            logger.info(`收到core服务器消息: ${data}`);
             const message = JSON.parse(data.toString());
-            // console.log(message);
             if (message.target_id == null) {
                 message.content.forEach((element) => {
-                    logger.info(element.data);
+                    logger.info(`收到[gsuid-core]日志消息: ${element.data}`);
                 });
             } else {
                 const bot = ctx.bots[`${message.bot_id}:${message.bot_self_id}`];

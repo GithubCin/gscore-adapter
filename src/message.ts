@@ -1,6 +1,8 @@
 import { Session, h, segment } from 'koishi';
 import { Config } from '.';
 import { writeFileSync } from 'fs';
+import { randomUUID } from 'node:crypto';
+import { join, resolve } from 'path';
 
 interface Message {
     type?: string;
@@ -92,11 +94,14 @@ export const parseMessage = (message: Message, messageId: string) => {
     if (message.type === 'text') return segment.text(message.data);
     if (message.type === 'image') return segment.image(message.data.replace('base64://', 'data:image/png;base64,'));
     if (message.type === 'at') return segment.at(message.data);
-    if (message.type === 'reply') return h('quote', { id: messageId }, segment.text(message.data));
-    // if (message.type === 'file') {
-    //     const b = Buffer.from(message.data.split('|')[1], 'base64');
-    //     return h.file(b, 'application/json');
-    // }
+    if (message.type === 'reply') return h('', {}, [h('quote', { id: messageId }), segment.text(message.data)]);
+    if (message.type === 'file') {
+        const [name, file] = message.data.split('|');
+        const id = randomUUID();
+        writeFileSync(`./public/${id}`, file, 'base64');
+        const location = resolve(join('.', 'public'), id);
+        return h('custom-file', { name, location });
+    }
 
     if (message.type === 'node') {
         const result = h('figure');
