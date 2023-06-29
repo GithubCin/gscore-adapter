@@ -25,8 +25,6 @@ export const Config: Schema<Config> = Schema.object({
 
 export function apply(ctx: Context, config: Config) {
     const client = new GsuidCoreClient();
-    //处理接收的文件
-
     ctx.component('custom-file', (attrs, children, session) => {
         if (session.platform !== 'onebot') {
             return '该平台适配器不支持导出文件类型消息';
@@ -42,12 +40,12 @@ export function apply(ctx: Context, config: Config) {
         } else {
             onebot.uploadGroupFile(session.channelId, attrs.location, attrs.name).finally(() => rmSync(attrs.location));
         }
-        // console.log(attrs);
         return `已发送文件 ${attrs.name}`;
     });
     ctx.on('ready', () => {
         client.createWs(ctx, config);
         ctx.bots.forEach((bot) => {
+            //处理接收的文件
             if (bot.platform === 'onebot') {
                 const logMap = new Map();
                 bot?.socket?.on('message', (data) => {
@@ -57,7 +55,6 @@ export function apply(ctx: Context, config: Config) {
                     } catch (error) {
                         return logger.warn('cannot parse message', data);
                     }
-                    console.log(parsed);
                     if (parsed.post_type === 'notice' && parsed.notice_type.includes('file') && parsed.file != null) {
                         const tmp = logMap.get(parsed.time);
                         if (isEqual(tmp, parsed)) return;
@@ -94,10 +91,7 @@ export function apply(ctx: Context, config: Config) {
             }
         });
     });
-    // write your plugin here
     ctx.on('message', (session) => {
-        // session.elements.forEach((i) => console.log(i));
-        // console.log(genToCoreMessage(session, config));
         client.ws.send(Buffer.from(JSON.stringify(genToCoreMessage(session, config))));
     });
 }
