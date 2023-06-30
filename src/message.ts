@@ -1,6 +1,6 @@
-import { Session, h, segment } from 'koishi';
-import { Config } from '.';
-import { writeFileSync } from 'fs';
+import { Context, Session, h, segment } from 'koishi';
+import { Config, logger } from '.';
+import { mkdir, mkdirSync, writeFileSync } from 'fs';
 import { randomUUID } from 'node:crypto';
 import { join, resolve } from 'path';
 
@@ -58,35 +58,58 @@ const genUserPermission = (session: Session): number => {
     }
 };
 
-const genContent = (session: Session): Message[] => {
-    return (session.elements ?? []).map((item) => {
-        if (item.type === 'at')
-            return {
+const genContent = async (session: Session): Promise<Message[]> => {
+    if (session.elements == null) return [];
+    const m: Message[] = [];
+    for (const item of session.elements) {
+        if (item.type === 'at') {
+            m.push({
                 type: item.type,
                 data: item.attrs.id,
-            };
-        if (item.type === 'image')
-            return {
+            });
+        }
+
+        if (item.type === 'image') {
+            m.push({
                 type: item.type,
                 data: item.attrs.url,
-            };
-        return {
-            type: item.type,
-            data: item.attrs.content,
-        };
-    });
+            });
+        }
+
+        if (item.type === 'text') {
+            m.push({
+                type: item.type,
+                data: item.attrs.content,
+            });
+        }
+
+        if (item.type === 'file') {
+            try {
+                const res = await session.app.http.file(item.attrs.url);
+                const b = Buffer.from(res.data);
+                const content = `${item.attrs.name}|${b.toString('base64')}`;
+                m.push({
+                    type: item.type,
+                    data: content,
+                });
+            } catch (error) {
+                logger.error(`下载文件失败: ${error}`);
+            }
+        }
+    }
+    return m;
 };
 
-export const genToCoreMessage = (session: Session, config: Config): ToCoreMessage => {
+export const genToCoreMessage = async (session: Session, config: Config): Promise<ToCoreMessage> => {
     return {
         bot_id: session.platform,
         bot_self_id: session.selfId,
         msg_id: session.messageId,
         user_type: genUserType(session),
-        group_id: session.channelId.startsWith('private') ? null : session.channelId,
+        group_id: session.channelId?.startsWith('private') ? null : session.channelId,
         user_id: session.userId,
         user_pm: genUserPermission(session),
-        content: genContent(session),
+        content: await genContent(session),
     };
 };
 
@@ -98,8 +121,9 @@ export const parseMessage = (message: Message, messageId: string) => {
     if (message.type === 'file') {
         const [name, file] = message.data.split('|');
         const id = randomUUID();
-        writeFileSync(`./public/${id}`, file, 'base64');
-        const location = resolve(join('.', 'public'), id);
+        mkdirSync(`./data`, { recursive: true });
+        writeFileSync(`./data/${id}`, file, 'base64');
+        const location = resolve(join('.', 'data'), id);
         return h('custom-file', { name, location });
     }
 
