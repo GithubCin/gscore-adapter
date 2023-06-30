@@ -1,6 +1,6 @@
 {
   "name": "koishi-plugin-gscore-adapter",
-  "description": "早柚核心适配器 详情见 https://docs.gsuid.gbots.work/#/",
+  "description": "早柚核心适配器 详情见 https://docs.gsuid.gbots.work/",
   "version": "1.0.3",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -9,9 +9,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GithubCin/gscore-adpater.git"
+    "url": "git+https://github.com/GithubCin/gscore-adapter.git"
   },
-  "homepage": "https://github.com/GithubCin/gscore-adpater",
+  "homepage": "https://github.com/GithubCin/gscore-adapter",
   "files": [
     "lib",
     "dist"
@@ -30,14 +30,13 @@
   ],
   "koishi": {
     "description": {
-      "zh": "早柚核心适配器 详情见 https://docs.gsuid.gbots.work/#/"
+      "zh": "早柚核心适配器 详情安装 https://docs.gsuid.gbots.work/"
     }
   },
   "peerDependencies": {
     "koishi": "^4.11.5"
   },
   "dependencies": {
-    "lodash-es": "^4.17.21",
-    "ws": "^8.13.0"
+    "lodash-es": "^4.17.21"
   }
 }
