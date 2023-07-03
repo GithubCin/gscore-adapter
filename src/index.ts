@@ -4,7 +4,7 @@ import { genToCoreMessage } from './message';
 import {} from '@koishijs/plugin-adapter-onebot';
 import { rmSync } from 'fs';
 import { randomUUID } from 'crypto';
-import { isEqual } from 'lodash-es';
+import { isEqual } from 'lodash';
 
 export const name = 'gscore-adapter';
 
