@@ -113,7 +113,7 @@ export const genToCoreMessage = async (session: Session, config: Config): Promis
     };
 };
 
-export const parseMessage = (message: Message, messageId: string) => {
+export const parseMessage = (message: Message, messageId: string, config: Config) => {
     if (message.type === 'text') return segment.text(message.data);
     if (message.type === 'image')
         return h('image', { url: message.data.replace('base64://', 'data:image/png;base64,') });
@@ -129,20 +129,23 @@ export const parseMessage = (message: Message, messageId: string) => {
     }
 
     if (message.type === 'node') {
-        const result = h('figure');
-        message.data.forEach((item) => {
-            const attrs = {
-                nickname: '小助手',
-            };
-            result.children.push(h('message', attrs, parseMessage(item, messageId)));
-        });
-        return result;
+        if (config.figureSupport) {
+            const result = h('figure');
+            message.data.forEach((item) => {
+                const attrs = {
+                    nickname: '小助手',
+                };
+                result.children.push(h('message', attrs, parseMessage(item, messageId, config)));
+            });
+            return result;
+        }
+        return message.data.map((i) => parseMessage(i, messageId, config));
     }
     return segment.text('未知消息类型');
 };
 
-export const parseCoreMessage = (message: FromCoreMessage): segment[] => {
-    return message.content.map((item) => {
-        return parseMessage(item, message.msg_id);
+export const parseCoreMessage = (message: FromCoreMessage, config: Config): segment[] => {
+    return  message.content.map((item) => {
+        return parseMessage(item, message.msg_id, config);
     });
 };

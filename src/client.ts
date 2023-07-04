@@ -32,12 +32,22 @@ export class GsuidCoreClient {
             } else {
                 if (config.dev) logger.info(data);
                 const bot = ctx.bots[`${message.bot_id}:${message.bot_self_id}`];
-                const parsed = parseCoreMessage(message);
+                const parsed = parseCoreMessage(message, config);
                 if (config.dev) logger.info(parsed);
-                if (message.target_type === 'group') {
-                    bot.sendMessage(message.target_id, parsed, message.target_id);
-                } else if (message.target_type === 'direct') {
-                    bot.sendPrivateMessage(message.target_id, parsed);
+                if (config.figureSupport) {
+                    if (message.target_type === 'group') {
+                        bot.sendMessage(message.target_id, parsed, message.target_id);
+                    } else if (message.target_type === 'direct') {
+                        bot.sendPrivateMessage(message.target_id, parsed);
+                    }
+                } else {
+                    parsed.flat().forEach((element) => {
+                        if (message.target_type === 'group') {
+                            bot.sendMessage(message.target_id, [element], message.target_id);
+                        } else if (message.target_type === 'direct') {
+                            bot.sendPrivateMessage(message.target_id, [element]);
+                        }
+                    });
                 }
             }
         });

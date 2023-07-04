@@ -16,6 +16,7 @@ export interface Config {
     host: string;
     port: number;
     dev: boolean;
+    figureSupport: boolean;
 }
 
 export const Config: Schema<Config> = Schema.object({
@@ -24,6 +25,7 @@ export const Config: Schema<Config> = Schema.object({
     host: Schema.string().default('localhost'),
     port: Schema.number().default(8765),
     dev: Schema.boolean().description('调试输出').default(false),
+    figureSupport: Schema.boolean().description('是否支持合并转发，如果当前适配器不支持，请切换为FALSE').default(true),
 });
 
 export function apply(ctx: Context, config: Config) {
