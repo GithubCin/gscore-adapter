@@ -5,6 +5,7 @@ import {} from '@koishijs/plugin-adapter-onebot';
 import { rmSync } from 'fs';
 import { randomUUID } from 'crypto';
 import { isEqual } from 'lodash';
+import { createCustomFile } from './custom-file';
 
 export const name = 'gscore-adapter';
 
@@ -14,6 +15,7 @@ export interface Config {
     botId: string;
     host: string;
     port: number;
+    dev: boolean;
 }
 
 export const Config: Schema<Config> = Schema.object({
@@ -21,27 +23,12 @@ export const Config: Schema<Config> = Schema.object({
     botId: Schema.string().default('koishi'),
     host: Schema.string().default('localhost'),
     port: Schema.number().default(8765),
+    dev: Schema.boolean().description('调试输出').default(false),
 });
 
 export function apply(ctx: Context, config: Config) {
     const client = new GsuidCoreClient();
-    ctx.component('custom-file', (attrs, children, session) => {
-        if (session.platform !== 'onebot') {
-            return '该平台适配器不支持导出文件类型消息';
-        }
-        const onebot = session.onebot;
-        if (session.subtype === 'private') {
-            const id = session.channelId;
-            const reg = /private:(\d+)/;
-            const userId = reg.test(id) ? reg.exec(id)[1] : null;
-            if (userId)
-                onebot.uploadPrivateFile(userId, attrs.location, attrs.name).finally(() => rmSync(attrs.location));
-            // onebot.uploadPrivateFile()
-        } else {
-            onebot.uploadGroupFile(session.channelId, attrs.location, attrs.name).finally(() => rmSync(attrs.location));
-        }
-        return `已发送文件 ${attrs.name}`;
-    });
+    createCustomFile(ctx);
     ctx.on('ready', () => {
         client.createWs(ctx, config);
         ctx.bots.forEach((bot) => {
@@ -90,7 +77,10 @@ export function apply(ctx: Context, config: Config) {
         });
     });
     ctx.on('message', (session) => {
-        // session.elements.forEach(console.log);
+        if (config.dev) {
+            session.elements.forEach(logger.info);
+            logger.info(session);
+        }
         genToCoreMessage(session, config).then((message) => {
             client.ws.send(Buffer.from(JSON.stringify(message)));
         });

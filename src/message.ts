@@ -115,7 +115,8 @@ export const genToCoreMessage = async (session: Session, config: Config): Promis
 
 export const parseMessage = (message: Message, messageId: string) => {
     if (message.type === 'text') return segment.text(message.data);
-    if (message.type === 'image') return segment.image(message.data.replace('base64://', 'data:image/png;base64,'));
+    if (message.type === 'image')
+        return h('image', { url: message.data.replace('base64://', 'data:image/png;base64,') });
     if (message.type === 'at') return segment.at(message.data);
     if (message.type === 'reply') return h('', {}, [h('quote', { id: messageId }), segment.text(message.data)]);
     if (message.type === 'file') {
