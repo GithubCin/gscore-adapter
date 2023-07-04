@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-gscore-adapter",
   "description": "早柚核心适配器 详情见 https://docs.gsuid.gbots.work/",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "contributors": [
