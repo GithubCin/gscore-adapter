@@ -38,7 +38,9 @@
     "koishi": "^4.11.5"
   },
   "dependencies": {
-    "@koishijs/client": "^5.11.0",
     "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@koishijs/client": "^5.11.0"
   }
 }
