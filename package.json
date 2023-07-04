@@ -34,9 +34,11 @@
     }
   },
   "peerDependencies": {
-    "koishi": "^4.11.5"
+    "koishi": "^4.11.5",
+    "@koishijs/plugin-console": "^5.11.0"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "@koishijs/client": "^5.11.0"
   }
 }
