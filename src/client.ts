@@ -30,7 +30,7 @@ export class GsuidCoreClient {
                     logger.info(`收到[gsuid-core]日志消息: ${element.data}`);
                 });
             } else {
-                if (config.dev) logger.info(data);
+                if (config.dev) logger.info(message);
                 const bot = ctx.bots[`${message.bot_id}:${message.bot_self_id}`];
                 const parsed = parseCoreMessage(message, config);
                 if (config.dev) logger.info(parsed);
