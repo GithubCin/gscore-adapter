@@ -8,7 +8,7 @@ export class GsuidCoreClient {
 
     ws!: WebSocket;
     public createWs(ctx: Context, config: Config): void {
-        const url = `${config.isWss ? 'wss' : 'ws'}://${config.host}:${config.port}/ws/${config.botId}`;
+        const url = `${config.isWss ? 'wss' : 'ws'}://${config.host}:${config.port}/${config.wsPath}/${config.botId}`;
         this.ws = new WebSocket(url);
         this.ws.on('open', () => {
             logger.info(`与[gsuid-core]成功连接! Bot_ID: ${config.botId}`);
@@ -25,6 +25,7 @@ export class GsuidCoreClient {
         });
         this.ws.on('message', (data) => {
             const message = JSON.parse(data.toString());
+            logger.info(data.toString());
             if (message.target_id == null) {
                 message.content.forEach((element) => {
                     logger.info(`收到[gsuid-core]日志消息: ${element.data}`);

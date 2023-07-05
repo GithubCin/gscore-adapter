@@ -100,7 +100,7 @@ const genContent = async (session: Session): Promise<Message[]> => {
     return m;
 };
 
-export const genToCoreMessage = async (session: Session, config: Config): Promise<ToCoreMessage> => {
+export const genToCoreMessage = async (session: Session): Promise<ToCoreMessage> => {
     return {
         bot_id: session.platform,
         bot_self_id: session.selfId,
