@@ -10,8 +10,8 @@ import { store } from '@koishijs/client';
 export default defineComponent({
     setup() {
         const custom: string[] = store['custom'];
-        const [hostname, port, protocol] = custom;
-        const host = `${protocol}//${hostname}:${port}/genshinuid`;
+        const [hostname, port, protocol, path] = custom;
+        const host = `${protocol}//${hostname}:${port}/${path}`;
         return {
             host
         }

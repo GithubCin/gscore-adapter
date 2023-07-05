@@ -26,6 +26,7 @@ export interface Config {
     wsPath: string;
     dev: boolean;
     figureSupport: boolean;
+    httpPath: string;
 }
 
 export const Config: Schema<Config> = Schema.object({
@@ -35,6 +36,7 @@ export const Config: Schema<Config> = Schema.object({
     host: Schema.string().default('localhost').description('主机地址'),
     port: Schema.number().default(8765).description('端口'),
     wsPath: Schema.string().default('ws').description('ws路径'),
+    httpPath: Schema.string().default('genshinuid').description('http路径'),
     dev: Schema.boolean().description('调试输出').default(false),
     figureSupport: Schema.boolean().description('是否支持合并转发，如果当前适配器不支持，请切换为FALSE').default(true),
 });
@@ -46,7 +48,7 @@ export function apply(ctx: Context, config: Config) {
         }
 
         async get() {
-            return [config.host, config.port.toString(), config.isHttps ? 'https:' : 'http:'];
+            return [config.host, config.port.toString(), config.isHttps ? 'https:' : 'http:', config.httpPath];
         }
     }
     ctx.plugin(CustomProvider);
