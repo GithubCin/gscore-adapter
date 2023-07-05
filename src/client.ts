@@ -6,6 +6,8 @@ import { parseCoreMessage } from './message';
 export class GsuidCoreClient {
     reconnectInterval = 5000;
 
+    isDispose = false;
+
     ws!: WebSocket;
     public createWs(ctx: Context, config: Config): void {
         const url = `${config.isWss ? 'wss' : 'ws'}://${config.host}:${config.port}/${config.wsPath}/${config.botId}`;
@@ -18,10 +20,14 @@ export class GsuidCoreClient {
         });
         this.ws.on('close', (err) => {
             logger.error(`与[gsuid-core]连接断开: ${err}`);
-            setTimeout(() => {
-                logger.info(`自动连接core服务器失败...${this.reconnectInterval / 1000}秒后重新连接...`);
-                this.createWs(ctx, config);
-            }, this.reconnectInterval);
+            if (!this.isDispose) {
+                setTimeout(() => {
+                    logger.info(`自动连接core服务器失败...${this.reconnectInterval / 1000}秒后重新连接...`);
+                    this.createWs(ctx, config);
+                }, this.reconnectInterval);
+            } else {
+                logger.info('已经重载实例或停用插件，当前实例不再自动重连');
+            }
         });
         this.ws.on('message', (data) => {
             const message = JSON.parse(data.toString());

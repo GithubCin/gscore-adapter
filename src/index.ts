@@ -71,4 +71,9 @@ export function apply(ctx: Context, config: Config) {
             client.ws.send(Buffer.from(JSON.stringify(message)));
         });
     });
+    ctx.on('dispose', () => {
+        // 在插件停用时关闭端口
+        client.isDispose = true;
+        client.ws.close();
+    });
 }
