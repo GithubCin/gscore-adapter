@@ -83,6 +83,13 @@ const genContent = async (session: Session): Promise<Message[]> => {
             });
         }
 
+        if (item.type === 'quote') {
+            m.push({
+                type: 'reply',
+                data: item.attrs.id,
+            })
+        }
+
         if (item.type === 'file') {
             try {
                 const res = await session.app.http.file(item.attrs.url);

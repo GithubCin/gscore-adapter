@@ -7,10 +7,12 @@ import { createCustomFile } from './custom-file';
 import { resolve } from 'path';
 import { noticeEvent } from './notice-event';
 
+export const reusable = true; // 声明此插件可重用
+
 declare module '@koishijs/plugin-console' {
     namespace Console {
         interface Services {
-            custom: any;
+            ['gscore-custom']: any;
         }
     }
 }
@@ -42,16 +44,16 @@ export const Config: Schema<Config> = Schema.object({
 });
 
 export function apply(ctx: Context, config: Config) {
-    class CustomProvider extends DataService<string[]> {
+    class GSCOREProvider extends DataService<string[]> {
         constructor(ctx: Context) {
-            super(ctx, 'custom');
+            super(ctx, 'gscore-custom');
         }
 
         async get() {
             return [config.host, config.port.toString(), config.isHttps ? 'https:' : 'http:', config.httpPath];
         }
     }
-    ctx.plugin(CustomProvider);
+    ctx.plugin(GSCOREProvider);
     ctx.using(['console'], (ctx) => {
         ctx.console.addEntry({
             dev: resolve(__dirname, '../client/index.ts'),

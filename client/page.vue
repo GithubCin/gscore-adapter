@@ -9,7 +9,7 @@ import { defineComponent } from 'vue';
 import { store } from '@koishijs/client';
 export default defineComponent({
     setup() {
-        const custom: string[] = store['custom'];
+        const custom: string[] = store['gscore-custom'];
         const [hostname, port, protocol, path] = custom;
         const host = `${protocol}//${hostname}:${port}/${path}`;
         return {
