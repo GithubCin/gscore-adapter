@@ -71,7 +71,7 @@ export function apply(ctx: Context, config: Config) {
             session.elements.forEach(logger.info);
             logger.info(session);
         }
-        genToCoreMessage(session).then((message) => {
+        genToCoreMessage(session, ctx).then((message) => {
             client.ws.send(Buffer.from(JSON.stringify(message)));
         });
     });

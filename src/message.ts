@@ -42,7 +42,13 @@ const genUserType = (session: Session): string => {
     }
 };
 
-const genUserPermission = (session: Session): number => {
+const genUserPermission = async (session: Session, ctx: Context): Promise<number> => {
+    if (ctx.database) {
+        const user = await ctx.database.getUser(session.platform, session.userId);
+        if (user?.authority >= 4) {
+            return 6 - user.authority > 0 ? 6 - user.authority : 1;
+        }
+    }
     if (session.subtype === 'group') {
         if (session.author?.roles?.includes('admin')) {
             return 3;
@@ -87,7 +93,7 @@ const genContent = async (session: Session): Promise<Message[]> => {
             m.push({
                 type: 'reply',
                 data: item.attrs.id,
-            })
+            });
         }
 
         if (item.type === 'file') {
@@ -107,7 +113,7 @@ const genContent = async (session: Session): Promise<Message[]> => {
     return m;
 };
 
-export const genToCoreMessage = async (session: Session): Promise<ToCoreMessage> => {
+export const genToCoreMessage = async (session: Session, ctx: Context): Promise<ToCoreMessage> => {
     return {
         bot_id: session.platform,
         bot_self_id: session.selfId,
@@ -115,7 +121,7 @@ export const genToCoreMessage = async (session: Session): Promise<ToCoreMessage>
         user_type: genUserType(session),
         group_id: session.channelId?.startsWith('private') ? null : session.channelId,
         user_id: session.userId,
-        user_pm: genUserPermission(session),
+        user_pm: await genUserPermission(session, ctx),
         content: await genContent(session),
     };
 };
@@ -152,7 +158,7 @@ export const parseMessage = (message: Message, messageId: string, config: Config
 };
 
 export const parseCoreMessage = (message: FromCoreMessage, config: Config): segment[] => {
-    return  message.content.map((item) => {
+    return message.content.map((item) => {
         return parseMessage(item, message.msg_id, config);
     });
 };
