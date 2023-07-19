@@ -49,15 +49,13 @@ const genUserPermission = async (session: Session, ctx: Context): Promise<number
             return 6 - user.authority > 0 ? 6 - user.authority : 1;
         }
     }
-    if (session.subtype === 'group') {
+    if (session.channelId?.startsWith('private:')) {
         if (session.author?.roles?.includes('admin')) {
             return 3;
         }
         if (session.author?.roles?.includes('owner')) {
             return 2;
         }
-        return 6;
-    } else if (session.subtype === 'private') {
         return 6;
     } else {
         return 6;
@@ -119,7 +117,7 @@ export const genToCoreMessage = async (session: Session, ctx: Context): Promise<
         bot_self_id: session.selfId,
         msg_id: session.messageId,
         user_type: genUserType(session),
-        group_id: session.channelId?.startsWith('private') ? null : session.channelId,
+        group_id: session.channelId?.startsWith('private:') ? null : session.channelId,
         user_id: session.userId,
         user_pm: await genUserPermission(session, ctx),
         content: await genContent(session),
