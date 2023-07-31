@@ -5,7 +5,6 @@ import {} from '@koishijs/plugin-adapter-onebot';
 import { DataService } from '@koishijs/plugin-console';
 import { createCustomFile } from './custom-file';
 import { resolve } from 'path';
-import { noticeEvent } from './notice-event';
 
 export const reusable = true; // 声明此插件可重用
 
@@ -64,7 +63,6 @@ export function apply(ctx: Context, config: Config) {
     createCustomFile(ctx);
     ctx.on('ready', () => {
         client.createWs(ctx, config);
-        noticeEvent(ctx, client);
     });
     ctx.on('message', (session) => {
         if (config.dev) {
