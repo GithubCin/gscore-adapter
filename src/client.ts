@@ -39,6 +39,7 @@ export class GsuidCoreClient {
             } else {
                 if (config.dev) logger.info(message);
                 const bot = ctx.bots[`${message.bot_id}:${message.bot_self_id}`];
+                if (bot == null) return;
                 const parsed = parseCoreMessage(message, config);
                 if (config.dev) logger.info(parsed);
                 if (config.figureSupport) {
