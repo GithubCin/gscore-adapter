@@ -6,12 +6,12 @@
 
 # koishi使用
 根据论坛教程进行koishi的启动：
-https://forum.koishi.xyz/t/topic/2502
+https://forum.koishi.xyz/t/topic/810
 
 # 安装和启动早柚核心
-手动安装core: https://docs.gsuid.gbots.work/#/InstallCore
+手动安装core: https://docs.sayu-bot.com/Started/InstallCore.html
 
-手动启动core: https://docs.gsuid.gbots.work/#/StartCore
+手动启动core: https://docs.sayu-bot.com/Started/StartCore.html
 
 # 启动该适配器
 在koishi的 `插件市场` 搜索 **gscore adapter** 并安装

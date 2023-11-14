@@ -152,11 +152,19 @@ export const parseMessage = (message: Message, messageId: string, config: Config
         }
         return message.data.map((i) => parseMessage(i, messageId, config));
     }
-    return segment.text('未知消息类型');
+    throw new Error(`Unknown message type: ${message.type}`);
 };
-
+/**
+ * parse从core传来的消息
+ */
 export const parseCoreMessage = (message: FromCoreMessage, config: Config): segment[] => {
-    return message.content.map((item) => {
-        return parseMessage(item, message.msg_id, config);
-    });
+    const segments: segment[] = [];
+    for (const item of message.content) {
+        try {
+            segments.push(parseMessage(item, message.msg_id, config));
+        } catch (e) {
+            logger.error(e.message);
+        }
+    }
+    return segments;
 };

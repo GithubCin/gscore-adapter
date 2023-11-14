@@ -34,7 +34,7 @@
     }
   },
   "peerDependencies": {
-    "@koishijs/plugin-console": "^5.11.0",
+    "@koishijs/plugin-console": "^5.12.1",
     "koishi": "^4.11.5"
   },
   "dependencies": {},
