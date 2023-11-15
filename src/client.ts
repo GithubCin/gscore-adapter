@@ -48,12 +48,17 @@ export class GsuidCoreClient {
                     } else if (message.target_type === 'direct') {
                         bot.sendPrivateMessage(message.target_id, parsed);
                     }
+                    if (message.target_type === 'channel') {
+                        bot.sendMessage(message.target_id, parsed, message.target_id);
+                    }
                 } else {
                     parsed.flat().forEach((element) => {
                         if (message.target_type === 'group') {
                             bot.sendMessage(message.target_id, [element], message.target_id);
                         } else if (message.target_type === 'direct') {
                             bot.sendPrivateMessage(message.target_id, [element]);
+                        } else if (message.target_type === 'channel') {
+                            bot.sendMessage(message.target_id, [element], message.target_id);
                         }
                     });
                 }

@@ -37,6 +37,8 @@ const genUserType = (session: Session): string => {
         return 'channel';
     } else if (session.subtype === 'sub_channel') {
         return 'sub_channel';
+    } else if (session?.event?.channel != null) {
+        return 'channel';
     } else {
         return 'unknown';
     }
