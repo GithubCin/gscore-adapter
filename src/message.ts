@@ -128,8 +128,14 @@ export const genToCoreMessage = async (session: Session, ctx: Context): Promise<
 
 export const parseMessage = (message: Message, messageId: string, config: Config) => {
     if (message.type === 'text') return segment.text(message.data);
-    if (message.type === 'image')
+    if (message.type === 'image') {
+        if (message.data.startsWith('link://')) {
+            const [_, url] = message.data.split('link://');
+            return h('image', { url });
+        }
         return h('image', { url: message.data.replace('base64://', 'data:image/png;base64,') });
+    }
+
     if (message.type === 'at') return segment.at(message.data);
     if (message.type === 'reply') return h('', {}, [h('quote', { id: messageId }), segment.text(message.data)]);
     if (message.type === 'file') {

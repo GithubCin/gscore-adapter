@@ -1,7 +1,7 @@
 import { Context, Schema, Logger } from 'koishi';
 import { GsuidCoreClient } from './client';
 import { genToCoreMessage } from './message';
-import {} from '@koishijs/plugin-adapter-qq';
+import {} from '@koishijs/plugin-adapter-onebot';
 import { DataService } from '@koishijs/plugin-console';
 import { createCustomFile } from './custom-file';
 import { resolve } from 'path';
