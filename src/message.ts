@@ -1,9 +1,8 @@
 import { Context, Session, h, segment } from 'koishi';
 import { Config, logger } from '.';
-import { mkdir, mkdirSync, writeFileSync } from 'fs';
+import { mkdirSync, writeFileSync } from 'fs';
 import { randomUUID } from 'node:crypto';
 import { join, resolve } from 'path';
-import { Children } from 'react';
 
 interface Message {
     type?: string;

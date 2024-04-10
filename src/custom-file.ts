@@ -8,7 +8,7 @@ export const createCustomFile = (ctx: Context): void => {
             if (session.platform !== 'onebot') {
                 return '该平台适配器不支持导出文件类型消息';
             }
-            const onebot = session.onebot;
+            const onebot = (session as any).onebot;
             try {
                 if (session.subtype === 'private') {
                     const id = session.channelId;
