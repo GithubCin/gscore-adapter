@@ -3,6 +3,7 @@ import { Config, logger } from '.';
 import { mkdir, mkdirSync, writeFileSync } from 'fs';
 import { randomUUID } from 'node:crypto';
 import { join, resolve } from 'path';
+import { Children } from 'react';
 
 interface Message {
     type?: string;
@@ -29,19 +30,31 @@ interface FromCoreMessage {
 }
 
 const genUserType = (session: Session): string => {
-    if (session.subtype === 'group') {
-        return 'group';
-    } else if (session.subtype === 'private') {
-        return 'direct';
-    } else if (session.subtype === 'channel') {
-        return 'channel';
-    } else if (session.subtype === 'sub_channel') {
-        return 'sub_channel';
-    } else if (session?.event?.channel != null) {
-        return 'channel';
+    if (session.subsubtype) {
+        if (session.subtype === 'group') {
+            return 'group';
+        } else if (session.subtype === 'private') {
+            return 'direct';
+        } else if (session.subtype === 'channel') {
+            return 'channel';
+        } else if (session.subtype === 'sub_channel') {
+            return 'sub_channel';
+        } else if (session?.event?.channel != null) {
+            return 'channel';
+        } else {
+            return 'unknown';
+        }
     } else {
-        return 'unknown';
+        //cc数据变化
+        if (session?.event?.channel) {
+            if (session?.event?.channel.type === 0) return 'channel';
+            if (session?.event?.channel.type === 1) return 'direct';
+            if (session?.event?.channel.type != null) return 'channel';
+        } else {
+            return 'unknown';
+        }
     }
+
 };
 
 const genUserPermission = async (session: Session, ctx: Context): Promise<number> => {
@@ -72,6 +85,13 @@ const genContent = async (session: Session): Promise<Message[]> => {
             m.push({
                 type: item.type,
                 data: item.attrs.id,
+            });
+        }
+
+        if (item.type === 'img') {
+            m.push({
+                type: item.type,
+                data: item.attrs.src,
             });
         }
 
@@ -131,9 +151,19 @@ export const parseMessage = (message: Message, messageId: string, config: Config
     if (message.type === 'image') {
         if (message.data.startsWith('link://')) {
             const [_, url] = message.data.split('link://');
-            return h('image', { url });
+            if (config.imgType === 'img') {
+                return h('img', { src: url });
+            } else {
+                return h('image', { url, src: url });
+            }
+
         }
-        return h('image', { url: message.data.replace('base64://', 'data:image/png;base64,') });
+        if (config.imgType === 'img') {
+            return h('img', { src: message.data.replace('base64://', 'data:image/png;base64,') });
+        } else {
+            return h('image', { url: message.data.replace('base64://', 'data:image/png;base64,') });
+        }
+
     }
 
     if (message.type === 'at') return segment.at(message.data);
@@ -176,3 +206,8 @@ export const parseCoreMessage = (message: FromCoreMessage, config: Config): segm
     }
     return segments;
 };
+
+
+export const wrapPassive = (segments: segment[], messageId: string): segment => {
+    return h('passive', { messageId }, segments);
+}
