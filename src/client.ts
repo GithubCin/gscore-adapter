@@ -44,16 +44,13 @@ export class GsuidCoreClient {
                 if (message.msg_id && config.passive) {
                     parsed = [wrapPassive(parsed, message.msg_id)];
                 }
-                // if (config.dev) logger.info(parsed);
                 if (config.figureSupport) {
                     if (message.target_type === 'group') {
                         bot.sendMessage(message.target_id, parsed, message.target_id);
                     } else if (message.target_type === 'direct') {
-                        console.log(message.target_id, parsed, message.target_id)
                         bot.sendPrivateMessage(message.target_id, parsed);
                     }
                     if (message.target_type === 'channel') {
-                        console.log(message.target_id, parsed, message.target_id)
                         bot.sendMessage(message.target_id, parsed, message.target_id);
                     }
                 } else {
@@ -63,7 +60,6 @@ export class GsuidCoreClient {
                         } else if (message.target_type === 'direct') {
                             bot.sendPrivateMessage(message.target_id, [element]);
                         } else if (message.target_type === 'channel') {
-                            console.log(message.target_id, [element], message.target_id)
                             bot.sendMessage(message.target_id, [element], message.target_id);
                         }
                     });

@@ -41,8 +41,8 @@ export const Config: Schema<Config> = Schema.object({
     wsPath: Schema.string().default('ws').description('ws路径'),
     httpPath: Schema.string().default('genshinuid').description('http路径'),
     dev: Schema.boolean().description('调试输出').default(false),
-    figureSupport: Schema.boolean().description('是否支持合并转发，如果当前适配器不支持，请切换为FALSE').default(true),
-    imgType: Schema.union(['image', 'img']).description('图片消息元素类型，新版本使用img，旧版本使用imgae').default('img'),
+    figureSupport: Schema.boolean().description('兼容项：是否支持合并转发，如果当前适配器不支持，请切换为FALSE').default(true),
+    imgType: Schema.union(['image', 'img']).description('兼容项：图片消息元素类型，新版本使用img，旧版本使用imgae').default('img'),
     passive: Schema.boolean().description('兼容项：passive消息元素包裹，用于获取消息上下文').default(true),
 });
 
