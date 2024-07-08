@@ -1,4 +1,4 @@
 <template>
     <img
-        src="https://camo.githubusercontent.com/25446bc50d36eaf997d1483815e35a9453ec50f910cdc9ea06ce810d1338600d/68747470733a2f2f73322e6c6f6c692e6e65742f323032332f30332f32352f6261726553645963736d52504f795a2e706e67" />
+        src="https://docs.sayu-bot.com/favicon.ico" />
 </template>

@@ -31,6 +31,15 @@
   "koishi": {
     "description": {
       "zh": "早柚核心适配器 详情安装 https://docs.sayu-bot.com"
+    },
+    "service": {
+      "required": [
+        "database"
+      ],
+      "optional": [
+        "assets",
+        "console"
+      ]
     }
   },
   "peerDependencies": {

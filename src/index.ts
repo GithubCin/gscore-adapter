@@ -7,6 +7,8 @@ import { resolve } from 'path';
 
 export const reusable = true; // 声明此插件可重用
 
+export const inject = ['database'];
+
 declare module '@koishijs/plugin-console' {
     namespace Console {
         interface Services {
