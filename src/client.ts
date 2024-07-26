@@ -41,10 +41,10 @@ export class GsuidCoreClient {
                 const bot = ctx.bots[`${message.bot_id}:${message.bot_self_id}`];
                 if (bot == null) return;
                 let parsed = parseCoreMessage(message, config);
-                if (message.msg_id && config.passive) {
-                    parsed = [wrapPassive(parsed, message.msg_id)];
-                }
                 if (config.figureSupport) {
+                    if (message.msg_id && config.passive) {
+                        parsed = [wrapPassive(parsed, message.msg_id)];
+                    }
                     if (message.target_type === 'group') {
                         bot.sendMessage(message.target_id, parsed, message.target_id);
                     } else if (message.target_type === 'direct') {
