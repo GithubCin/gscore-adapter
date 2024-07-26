@@ -1,7 +1,7 @@
 import type { Context } from 'koishi';
 import { logger, type Config } from './index';
 import WebSocket from 'ws';
-import { parseCoreMessage, wrapPassive } from './message';
+import { findChannelId, parseCoreMessage, wrapPassive } from './message';
 
 export class GsuidCoreClient {
     reconnectInterval = 5000;
@@ -51,16 +51,20 @@ export class GsuidCoreClient {
                         bot.sendPrivateMessage(message.target_id, parsed);
                     }
                     if (message.target_type === 'channel') {
-                        bot.sendMessage(message.target_id, parsed, message.target_id);
+                        const id = findChannelId(message) ?? message.target_id;
+                        bot.sendMessage(id, parsed, message.target_id);
                     }
                 } else {
                     parsed.flat().forEach((element) => {
+                        const p =
+                            message.msg_id && config.passive ? [wrapPassive([element], message.msg_id)] : [element];
                         if (message.target_type === 'group') {
-                            bot.sendMessage(message.target_id, [element], message.target_id);
+                            bot.sendMessage(message.target_id, p, message.target_id);
                         } else if (message.target_type === 'direct') {
-                            bot.sendPrivateMessage(message.target_id, [element]);
+                            bot.sendPrivateMessage(message.target_id, p);
                         } else if (message.target_type === 'channel') {
-                            bot.sendMessage(message.target_id, [element], message.target_id);
+                            const id = findChannelId(message) ?? message.target_id;
+                            bot.sendMessage(id, p, message.target_id);
                         }
                     });
                 }

@@ -53,7 +53,6 @@ const genUserType = (session: Session): string => {
             return 'unknown';
         }
     }
-
 };
 
 const genUserPermission = async (session: Session, ctx: Context): Promise<number> => {
@@ -155,14 +154,12 @@ export const parseMessage = (message: Message, messageId: string, config: Config
             } else {
                 return h('image', { url, src: url });
             }
-
         }
         if (config.imgType === 'img') {
             return h('img', { src: message.data.replace('base64://', 'data:image/png;base64,') });
         } else {
             return h('image', { url: message.data.replace('base64://', 'data:image/png;base64,') });
         }
-
     }
 
     if (message.type === 'at') return segment.at(message.data);
@@ -206,7 +203,14 @@ export const parseCoreMessage = (message: FromCoreMessage, config: Config): segm
     return segments;
 };
 
-
 export const wrapPassive = (segments: segment[], messageId: string): segment => {
     return h('passive', { messageId }, segments);
-}
+};
+
+/**
+ * 查询group分组中的id
+ */
+export const findChannelId = (message: FromCoreMessage): string | null => {
+    const group = message.content.find((item) => item.type === 'group');
+    return group?.data;
+};
