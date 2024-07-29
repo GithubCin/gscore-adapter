@@ -43,7 +43,7 @@ export class GsuidCoreClient {
                 let parsed = parseCoreMessage(message, config);
                 if (config.figureSupport) {
                     if (message.msg_id && config.passive) {
-                        parsed = [wrapPassive(parsed, message.msg_id)];
+                        parsed = wrapPassive(parsed, message.msg_id);
                     }
                     if (message.target_type === 'group') {
                         bot.sendMessage(message.target_id, parsed, message.target_id);
@@ -56,8 +56,7 @@ export class GsuidCoreClient {
                     }
                 } else {
                     parsed.flat().forEach((element) => {
-                        const p =
-                            message.msg_id && config.passive ? [wrapPassive([element], message.msg_id)] : [element];
+                        const p = message.msg_id && config.passive ? wrapPassive([element], message.msg_id) : [element];
                         if (message.target_type === 'group') {
                             bot.sendMessage(message.target_id, p, message.target_id);
                         } else if (message.target_type === 'direct') {

@@ -203,8 +203,8 @@ export const parseCoreMessage = (message: FromCoreMessage, config: Config): segm
     return segments;
 };
 
-export const wrapPassive = (segments: segment[], messageId: string): segment => {
-    return h('passive', { messageId }, segments);
+export const wrapPassive = (segments: segment[], messageId: string): segment[] => {
+    return [h('passive', { messageId }), ...segments];
 };
 
 /**
