@@ -2,6 +2,7 @@ import type { Context } from 'koishi';
 import { logger, type Config } from './index';
 import WebSocket from 'ws';
 import { findChannelId, parseCoreMessage, wrapPassive } from './message';
+import { SessionEventManagerMap } from './event-manager';
 
 export class GsuidCoreClient {
     reconnectInterval = 5000;
@@ -45,25 +46,33 @@ export class GsuidCoreClient {
                     if (message.msg_id && config.passive) {
                         parsed = wrapPassive(parsed, message.msg_id);
                     }
-                    if (message.target_type === 'group') {
-                        bot.sendMessage(message.target_id, parsed, message.target_id);
-                    } else if (message.target_type === 'direct') {
-                        bot.sendPrivateMessage(message.target_id, parsed);
-                    }
-                    if (message.target_type === 'channel') {
-                        const id = findChannelId(message) ?? message.target_id;
-                        bot.sendMessage(id, parsed, message.target_id);
+                    if (message.msg_id && SessionEventManagerMap.get(message.msg_id)) {
+                        SessionEventManagerMap.get(message.msg_id)?.triggerEvent({ message: parsed, id: message.msg_id });
+                    } else {
+                        if (message.target_type === 'group') {
+                            bot.sendMessage(message.target_id, parsed, message.target_id);
+                        } else if (message.target_type === 'direct') {
+                            bot.sendPrivateMessage(message.target_id, parsed);
+                        }
+                        if (message.target_type === 'channel') {
+                            const id = findChannelId(message) ?? message.target_id;
+                            bot.sendMessage(id, parsed, message.target_id);
+                        }
                     }
                 } else {
                     parsed.flat().forEach((element) => {
                         const p = message.msg_id && config.passive ? wrapPassive([element], message.msg_id) : [element];
-                        if (message.target_type === 'group') {
-                            bot.sendMessage(message.target_id, p, message.target_id);
-                        } else if (message.target_type === 'direct') {
-                            bot.sendPrivateMessage(message.target_id, p);
-                        } else if (message.target_type === 'channel') {
-                            const id = findChannelId(message) ?? message.target_id;
-                            bot.sendMessage(id, p, message.target_id);
+                        if (message.msg_id && SessionEventManagerMap.get(message.msg_id)) {
+                            SessionEventManagerMap.get(message.msg_id)?.triggerEvent({ message: parsed, id: message.msg_id });
+                        } else {
+                            if (message.target_type === 'group') {
+                                bot.sendMessage(message.target_id, p, message.target_id);
+                            } else if (message.target_type === 'direct') {
+                                bot.sendPrivateMessage(message.target_id, p);
+                            } else if (message.target_type === 'channel') {
+                                const id = findChannelId(message) ?? message.target_id;
+                                bot.sendMessage(id, p, message.target_id);
+                            }
                         }
                     });
                 }

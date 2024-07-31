@@ -2,6 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "module": "esnext",
+    "emitDeclarationOnly": true,
     "moduleResolution": "node",
     "types": [
       // 这一行的作用是导入相关全局类型

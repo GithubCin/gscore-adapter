@@ -1,4 +1,4 @@
-import { Context, Session, h, segment } from 'koishi';
+import { type Context, Session, h, segment } from 'koishi';
 import { Config, logger } from '.';
 import { mkdirSync, writeFileSync } from 'fs';
 import { randomUUID } from 'node:crypto';
