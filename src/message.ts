@@ -128,6 +128,35 @@ const genContent = async (session: Session): Promise<Message[]> => {
             }
         }
     }
+    try {
+        if (session.quote?.elements) {
+            const quotedImages: Message[] = [];
+
+            for (const quotedItem of session.quote.elements) {
+                if (quotedItem.type !== 'image' && quotedItem.type !== 'img') {
+                    continue;
+                }
+
+                // 2. 使用更安全的属性访问和空值检查
+                const imageData = quotedItem.attrs?.src || quotedItem.attrs?.url || quotedItem.attrs?.file;
+                if (!imageData) {
+                    continue;
+                }
+
+                quotedImages.push({
+                    type: 'image' as const, // 3. 明确字面量类型
+                    data: imageData,
+                });
+            }
+
+            // 5. 使用更高效的方式添加到数组头部
+            if (quotedImages.length > 0) {
+                m.unshift(...quotedImages);
+            }
+        }
+    } catch (error) {
+        logger.warning(`获取引用消息中的图片失败:`, error);
+    }
     return m;
 };
 
